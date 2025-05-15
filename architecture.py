@@ -76,7 +76,7 @@ def get_pad_masks(seq_len, pad_data, kernel_size=16, stride=8, chunk_size=250):
     c = Chunking(chunk_size=chunk_size, input_timesteps=conved_paddings.shape[-1])
     chunked_paddings = c(conved_paddings) #[batch_size, 1, chunk_size, num_chunks]
     
-    chunked_paddings = chunked_paddings.squeeze() #[batch_size, chunk_size, num_chunks]
+    chunked_paddings = chunked_paddings.squeeze(1) #[batch_size, chunk_size, num_chunks]
     chunked_paddings = T.permute(chunked_paddings, (0,2,1)) #[batch_size, num_chunks, chunk_size]
     
     #counts: [batch_size, num_chunks]
