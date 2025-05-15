@@ -9,21 +9,14 @@ import torch as T
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
 
 import torchaudio
 
-import xml.etree.ElementTree as ET
-import os
-from os import listdir
-from os.path import join
-
 import matplotlib
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 
-import time
 import os
+import random
 
 from architecture import get_pad_masks, Model
 
