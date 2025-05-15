@@ -49,8 +49,9 @@ def get_pad_masks(seq_len, pad_data, kernel_size=16, stride=8, chunk_size=250):
     #seq_len: number of timesteps in the audio
     #pad_data: list with length equal to batch_size, each element denotes number of padding timesteps
     # for the associated datapoint
-    
-    #pad_data = T.tensor(pad_data)
+
+    if T.is_tensor(pad_data) == False:
+        pad_data = T.tensor(pad_data)
     
     #create a mask [batch_size, timesteps], where non-padding values are 1 and padding values are 0
     initial_pad_mask = T.ones((pad_data.shape[0], seq_len)) #[batch_size, timesteps]
