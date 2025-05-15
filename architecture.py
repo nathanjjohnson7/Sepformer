@@ -85,7 +85,7 @@ def get_pad_masks(seq_len, pad_data, kernel_size=16, stride=8, chunk_size=250):
     print(counts)
     
     #padding mask for the intra transformer [batch_size, num_chunks, chunk_size, chunk_size]
-    intrapads = T.ones((*counts.shape, chunk_size, chunk_size))
+    intrapads = T.zeros((*counts.shape, chunk_size, chunk_size))
     # Create row and column masks
     row_idx = T.arange(chunk_size).view(1, 1, chunk_size, 1)  # [1,1,chunk_size,1]
     col_idx = T.arange(chunk_size).view(1, 1, 1, chunk_size)  # [1,1,1,chunk_size]
@@ -97,7 +97,7 @@ def get_pad_masks(seq_len, pad_data, kernel_size=16, stride=8, chunk_size=250):
                  & (col_idx < (chunk_size - counts_expanded)))==0
     
     #set padding values to -inf
-    intrapads[keep_mask] = float('-inf')
+    intrapads[keep_mask] = -1e9 #float('-inf')
     
     #for the inter transformer, which attends across chunks, we pad out all chunks that are
     # completely filled iwth padding. So we count the chunks where the padded count 
@@ -109,7 +109,7 @@ def get_pad_masks(seq_len, pad_data, kernel_size=16, stride=8, chunk_size=250):
     num_chunks = counts.shape[-1]
     
     #[batch_size, num_chunks, num_chunks]
-    interpads = T.ones((*counts_inter.shape, num_chunks, num_chunks))
+    interpads = T.zeros((*counts_inter.shape, num_chunks, num_chunks))
     
     # Create row and column masks
     row_idx = T.arange(num_chunks).view(1, num_chunks, 1)  # [1,num_chunks,1]
@@ -121,7 +121,7 @@ def get_pad_masks(seq_len, pad_data, kernel_size=16, stride=8, chunk_size=250):
     keep_mask = ((row_idx < (num_chunks - c_expanded)) 
                  & (col_idx < (num_chunks - c_expanded)))==0
 
-    interpads[keep_mask] = float('-inf')
+    interpads[keep_mask] = -1e9 #float('-inf')
     interpads = interpads.unsqueeze(1) #[batch_size, 1, num_chunks, num_chunks]
     
     return initial_pad_mask, intrapads, interpads
